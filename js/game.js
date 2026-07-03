@@ -46,6 +46,67 @@ const UI = {
 // voices load async in some browsers
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = ()=>{ UI._vf=UI.pickVoice('female'); UI._vm=UI.pickVoice('male'); }; }
 
+/* ================= Ambient audio (procedural, no external files) ================= */
+const Ambient = {
+  ctx:null, master:null, muted:false, nodes:[], swell:null, _buf:null,
+  init(){
+    if(this.ctx) return;
+    const C = window.AudioContext || window.webkitAudioContext; if(!C) return;
+    this.ctx = new C();
+    this.master = this.ctx.createGain(); this.master.gain.value = 0;
+    this.master.connect(this.ctx.destination);
+  },
+  resume(){ try{ if(this.ctx && this.ctx.state==='suspended') this.ctx.resume(); }catch(e){} },
+  noise(){
+    if(this._buf) return this._buf;
+    const ctx=this.ctx, len=ctx.sampleRate*2, buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
+    let b0=0,b1=0,b2=0;
+    for(let i=0;i<len;i++){ const w=Math.random()*2-1; b0=0.99*b0+w*0.05; b1=0.96*b1+w*0.05; b2=0.90*b2+w*0.05; d[i]=(b0+b1+b2+w*0.12)*0.35; }
+    return (this._buf=buf);
+  },
+  stopAll(){
+    this.nodes.forEach(n=>{ try{ n.stop&&n.stop(); }catch(e){} try{ n.disconnect&&n.disconnect(); }catch(e){} });
+    this.nodes=[]; if(this.swell){ clearInterval(this.swell); this.swell=null; }
+  },
+  scene(env){
+    if(!this.ctx) return; this.stopAll();
+    const cfg = ({
+      flight:   {freq:180, q:0.5, vol:0.12},   // cabin hum
+      airport:  {freq:650, q:0.8, vol:0.11},   // hall murmur
+      street:   {freq:280, q:0.5, vol:0.13},   // traffic
+      concourse:{freq:720, q:0.9, vol:0.15},   // busy concourse chatter
+      stands:   {freq:820, q:0.9, vol:0.24},   // loud crowd
+      pitch:    {freq:760, q:0.9, vol:0.22}    // stadium crowd
+    })[env] || {freq:500,q:0.7,vol:0.12};
+    const src=this.ctx.createBufferSource(); src.buffer=this.noise(); src.loop=true;
+    const filt=this.ctx.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=cfg.freq; filt.Q.value=cfg.q;
+    const g=this.ctx.createGain(); g.gain.value=cfg.vol;
+    // gentle low rumble under stadium scenes
+    src.connect(filt); filt.connect(g); g.connect(this.master); src.start();
+    this.nodes.push(src,filt,g);
+    if(env==='stands' || env==='pitch'){
+      this.swell=setInterval(()=>{ if(Math.random()<0.45) this.cheer(0.6); }, 7000);
+    }
+    this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+    this.master.gain.linearRampToValueAtTime(this.muted?0:1, this.ctx.currentTime+1.2);
+  },
+  cheer(strength){
+    if(!this.ctx || this.muted) return; strength=strength||1;
+    const t=this.ctx.currentTime;
+    const src=this.ctx.createBufferSource(); src.buffer=this.noise(); src.loop=true;
+    const f=this.ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.value=950; f.Q.value=0.6;
+    const g=this.ctx.createGain(); g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.28*strength,t+0.35);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+2.4);
+    src.connect(f); f.connect(g); g.connect(this.master); src.start(t); src.stop(t+2.5);
+  },
+  toggle(){
+    this.muted=!this.muted;
+    if(this.master && this.ctx) this.master.gain.linearRampToValueAtTime(this.muted?0:1, this.ctx.currentTime+0.3);
+    return this.muted;
+  }
+};
+
 const Game = {
   cfg:null, scenes:[], save:null, cur:null, fpv:null, showTransl:false,
 
@@ -106,10 +167,11 @@ const Game = {
     f.style.transition='none'; this.fade(true); void f.offsetWidth; f.style.transition='';
     await this.wait(50);
     this.ensureFPV();
+    Ambient.init(); Ambient.resume();   // audio unlocked by this click gesture
     const start = (typeof fromIdx==='number') ? fromIdx : 0;
 
     if(start===0){
-      this.fpv.setEnv('flight');
+      this.fpv.setEnv('flight'); Ambient.scene('flight');
       // stay black until the cabin is truly ready: enough painted frames AND a safe minimum
       // (covers first-time WebGL/shader compile which can lag the frame counter)
       this.cine('⏳ Boarding… 登機中','正在載入機艙 · preparing cabin');
@@ -136,7 +198,7 @@ const Game = {
     const S=this.scenes[i]; this.cur={ S, beat:0, score:0 };
     document.getElementById('loc-en').textContent=S.name;
     document.getElementById('loc-zh').textContent=S.zh;
-    this.fpv.setEnv(S.env);
+    this.fpv.setEnv(S.env); Ambient.scene(S.env);
     // keep the screen faded to black while the real 360 photo loads, then reveal
     this.cine(`⏳ Loading… ${S.name}`, `載入實景中 · ${S.zh}`);
     await Promise.race([ this.fpv.whenReady(), this.wait(9000) ]);
@@ -148,8 +210,9 @@ const Game = {
     this.renderBeat();
   },
 
-  quitTrip(){ speechSynthesis.cancel(); this.buildTitle(); },
+  quitTrip(){ speechSynthesis.cancel(); Ambient.stopAll(); this.buildTitle(); },
   toggleTransl(){ this.showTransl=!this.showTransl; document.querySelectorAll('.transl').forEach(e=>e.classList.toggle('show',this.showTransl)); },
+  toggleSound(){ const muted=Ambient.toggle(); const b=document.getElementById('soundBtn'); if(b) b.textContent=muted?'🔇':'🔊'; },
 
   /* ---------- beat renderer ---------- */
   renderBeat(){
@@ -318,7 +381,7 @@ const Game = {
     const aim=+document.getElementById('s-aim').value, spin=+document.getElementById('s-spin').value;
     this.fpv.kick({aim,spin},(res)=>{
       const r=document.getElementById('phy-read');
-      if(res.scored){ r.innerHTML="<b>✅ GOAL! 球彎繞過人牆進門!</b>"; this.showPhyQ(); }
+      if(res.scored){ r.innerHTML="<b>✅ GOAL! 球彎繞過人牆進門!</b>"; Ambient.cheer(1.2); this.showPhyQ(); }
       else r.innerHTML="<b>❌ "+res.why+"</b> 試著加大側旋讓球更彎。";
     });
   },

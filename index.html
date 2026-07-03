@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>World Cup Trip · 世足英文沈浸之旅</title>
-<link rel="stylesheet" href="css/style.css?v=8" />
+<link rel="stylesheet" href="css/style.css?v=9" />
 </head>
 <body>
 <div id="app">
@@ -46,6 +46,7 @@
     <div class="scenetop">
       <div class="locband"><div class="en" id="loc-en"></div><div class="zh" id="loc-zh"></div></div>
       <div class="rt">
+        <button class="iconbtn" id="soundBtn" onclick="Game.toggleSound()">🔊</button>
         <button class="iconbtn" onclick="Game.showPassport()">📔</button>
         <button class="iconbtn" onclick="Game.toggleTransl()">🌐 中譯</button>
         <button class="iconbtn" onclick="Game.quitTrip()">✕</button>
@@ -72,8 +73,8 @@
 <!-- HDR equirectangular loader for real 360 photo environments (Poly Haven, CC0) -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
 <!-- App -->
-<script src="js/data.js?v=8"></script>       <!-- embedded fallback bundle (double-click support) -->
-<script src="js/engine.js?v=8"></script>
-<script src="js/game.js?v=8"></script>
+<script src="js/data.js?v=9"></script>       <!-- embedded fallback bundle (double-click support) -->
+<script src="js/engine.js?v=9"></script>
+<script src="js/game.js?v=9"></script>
 </body>
 </html>

@@ -1,0 +1,12 @@
+{
+  "title": "World Cup Trip · 世足英文沈浸之旅",
+  "version": "2.0",
+  "stamps": ["🛂 Immigration", "🚕 City", "🎟️ Ticket", "🏟️ Stands", "⚽ The Secret"],
+  "scenes": [
+    "data/scenes/00-airport.json",
+    "data/scenes/01-city.json",
+    "data/scenes/02-ticket.json",
+    "data/scenes/03-stands.json",
+    "data/scenes/04-secret.json"
+  ]
+}

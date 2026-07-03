@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Trip · 世足英文沈浸之旅</title>
+<link rel="stylesheet" href="css/style.css?v=8" />
+</head>
+<body>
+<div id="app">
+  <!-- BOOT / LOADING -->
+  <div id="boot">
+    <div class="plane">✈️</div>
+    <div class="msg">Loading your trip… 載入場景資料中</div>
+    <div class="bar"><i></i></div>
+  </div>
+
+  <!-- TITLE -->
+  <section class="screen" id="title">
+    <div class="ribbon" style="position:absolute;top:0;left:0;right:0"></div>
+    <div class="plane">✈️</div>
+    <div class="logo">FIRST-PERSON ENGLISH IMMERSION</div>
+    <h1>World Cup Trip · 世足英文之旅</h1>
+    <div class="sub">You board a plane and fly abroad to watch the <b>2026 World Cup</b>. From the airport to your seat, survive using <b>English</b> — then learn one football-physics secret. 第一人稱搭機出發,全程用英文闖關。</div>
+    <div class="badges">
+      <span class="pill">🗣️ NPC 英文對話</span>
+      <span class="pill">🔊 聽力 · 發音</span>
+      <span class="pill">🪧 看板/球票閱讀</span>
+      <span class="pill">🧲 拖放配對</span>
+      <span class="pill">⚽ 1 個物理祕密</span>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px">
+      <button class="btn" onclick="Game.startTrip(0)">🛫 登機出發 BOARD NOW</button>
+      <button class="btn blue" id="continueBtn" style="display:none" onclick="Game.startTrip(Game.save.done.filter(Boolean).length)">↩ 繼續旅程</button>
+      <button class="btn ghost" onclick="Game.resetSave()">🗑 清除進度</button>
+    </div>
+    <div class="hint" style="margin-top:14px">拖曳畫面可環顧四周 · 進度自動存本機</div>
+  </section>
+
+  <!-- SCENE -->
+  <section class="screen" id="scene">
+    <canvas id="fpv"></canvas>
+    <div class="vignette"></div>
+    <div class="fade" id="fade"></div>
+    <div class="cine" id="cine"></div>
+    <div class="scenetop">
+      <div class="locband"><div class="en" id="loc-en"></div><div class="zh" id="loc-zh"></div></div>
+      <div class="rt">
+        <button class="iconbtn" onclick="Game.showPassport()">📔</button>
+        <button class="iconbtn" onclick="Game.toggleTransl()">🌐 中譯</button>
+        <button class="iconbtn" onclick="Game.quitTrip()">✕</button>
+      </div>
+    </div>
+    <div class="lookhint" id="lookhint">🖱️ 拖曳環顧四周</div>
+    <div class="panel"><div class="inner" id="panel"></div></div>
+  </section>
+</div>
+
+<div class="overlay" id="ov-stamp"><div class="modal"><div class="mh"><h2>🛂 Passport Stamp</h2><button class="x" onclick="UI.close('ov-stamp')">關閉</button></div><div class="mb" id="stamp-body"></div></div></div>
+<div class="overlay" id="ov-pass"><div class="modal"><div class="mh"><h2>📔 旅程護照</h2><button class="x" onclick="UI.close('ov-pass')">關閉</button></div><div class="mb" id="pass-body"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- Three.js core -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<!-- Post-processing (optional; falls back gracefully if any fail) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<!-- HDR equirectangular loader for real 360 photo environments (Poly Haven, CC0) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
+<!-- App -->
+<script src="js/data.js?v=8"></script>       <!-- embedded fallback bundle (double-click support) -->
+<script src="js/engine.js?v=8"></script>
+<script src="js/game.js?v=8"></script>
+</body>
+</html>

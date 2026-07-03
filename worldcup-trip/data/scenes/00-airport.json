@@ -1,0 +1,31 @@
+{
+  "id": 0, "key": "airport", "icon": "🛂",
+  "name": "Airport Immigration", "zh": "機場入境", "env": "airport",
+  "tags": [["對話 Dialogue", "eng"], ["看板閱讀 Reading", "mech"]],
+  "beats": [
+    { "type": "say", "who": "Officer", "role": "海關官員",
+      "en": "Welcome! May I see your passport, please?", "zh": "歡迎!請給我看你的護照。" },
+    { "type": "choose", "who": "Officer", "role": "海關官員",
+      "en": "What is the purpose of your visit?", "zh": "你來訪的目的是什麼?",
+      "opts": [
+        { "t": "I'm here to watch the World Cup.", "s": "我是來看世界盃的。", "ok": true },
+        { "t": "I am a football.", "s": "我是一顆足球。(文法對但語意錯)", "ok": false },
+        { "t": "Yes, thank you very much.", "s": "答非所問", "ok": false }
+      ],
+      "fbOk": "Perfect answer! 目的講清楚,官員點頭放行。",
+      "fbNo": "官員一臉困惑——purpose 問的是『目的』,要說你來做什麼。" },
+    { "type": "listen", "who": "Officer", "role": "海關官員",
+      "en": "Enjoy your stay. Gate B is on your left.", "zh": "祝你玩得愉快。B 登機門在你左邊。",
+      "q": "Which way is Gate B?", "qz": "B 門在哪個方向?",
+      "opts": [ { "t": "On the left 在左邊", "ok": true }, { "t": "On the right 在右邊", "ok": false }, { "t": "Upstairs 在樓上", "ok": false } ],
+      "fbOk": "聽對了!left = 左邊。", "fbNo": "再聽一次:on your LEFT。" },
+    { "type": "fill", "who": "Sign", "role": "入境看板",
+      "intro": "Read the airport board and fill the blanks.", "introZh": "讀機場看板,填入正確資訊。",
+      "sign": [["FLIGHT", "WC 2026"], ["FROM", "Taipei"], ["STATUS", "___1___"], ["GATE", "___2___"]],
+      "blanks": [
+        { "n": 1, "q": "The plane has arrived. STATUS = ?", "opts": ["Arrived 已抵達", "Delayed 誤點", "Boarding 登機中"], "ok": 0 },
+        { "n": 2, "q": "The officer said Gate B. GATE = ?", "opts": ["B", "D", "F"], "ok": 0 }
+      ],
+      "fb": "看板讀懂了!Arrived = 已抵達,Gate B。" }
+  ]
+}

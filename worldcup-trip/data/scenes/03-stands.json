@@ -1,0 +1,32 @@
+{
+  "id": 3, "key": "stands", "icon": "🏟️",
+  "name": "In the Stands", "zh": "看台聊天", "env": "stands",
+  "tags": [["球迷對話 Dialogue", "eng"], ["短文克漏字 Cloze", "mech"]],
+  "beats": [
+    { "type": "say", "who": "Fan", "role": "鄰座球迷",
+      "en": "Hey! First time at the World Cup?", "zh": "嘿!第一次來看世界盃嗎?" },
+    { "type": "choose", "who": "You → Fan", "role": "你回答",
+      "en": "Answer the friendly fan.", "zh": "回應熱情的球迷。",
+      "opts": [
+        { "t": "Yes, I'm so excited!", "s": "對啊,我超興奮!", "ok": true },
+        { "t": "No, I am a referee.", "s": "不,我是裁判。(說謊離題)", "ok": false },
+        { "t": "The ticket is forty dollars.", "s": "答非所問", "ok": false }
+      ],
+      "fbOk": "🙌 自然!'I'm so excited!' 表達情緒很道地。",
+      "fbNo": "回答 yes/no + 感受最自然,例如 'Yes, I'm so excited!'。" },
+    { "type": "cloze", "who": "Fan", "role": "球迷分享小知識",
+      "intro": "The fan tells you the World Cup story. Fill the missing words.",
+      "introZh": "球迷跟你講世界盃小故事,選出正確的字填空。",
+      "text": [
+        "The first World Cup was ", { "b": 1 }, " in 1930 in Uruguay.",
+        " Only 13 ", { "b": 2 }, " joined because travel was hard.",
+        " Today, billions of ", { "b": 3 }, " watch and celebrate together!"
+      ],
+      "blanks": [
+        { "n": 1, "q": "was ___ (舉辦)", "opts": ["held 舉辦", "eaten 吃掉", "slept 睡覺"], "ok": 0 },
+        { "n": 2, "q": "13 ___ (隊伍)", "opts": ["teams 隊伍", "tickets 票", "seats 座位"], "ok": 0 },
+        { "n": 3, "q": "billions of ___ (球迷)", "opts": ["fans 球迷", "goals 球門", "planes 飛機"], "ok": 0 }
+      ],
+      "fb": "克漏字全對!held / teams / fans。" }
+  ]
+}

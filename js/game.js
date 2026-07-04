@@ -8,27 +8,30 @@ const UI = {
   open(id){ document.getElementById(id).classList.add('active'); },
   close(id){ document.getElementById(id).classList.remove('active'); },
   toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); },
-  _vf:null, _vm:null,
-  pickVoice(gender){
-    if(!('speechSynthesis' in window)) return null;
-    const vs = speechSynthesis.getVoices(); if(!vs.length) return null;
-    const female=[/Samantha/i,/Ava/i,/Allison/i,/Serena/i,/Google US English/i,/Google UK English Female/i,/Microsoft (Aria|Jenny|Michelle|Ana|Zira)/i,/female/i];
+  _vf:null, _vfEx:null, _vm:null, excited:false,
+  voiceList(gender){
+    if(!('speechSynthesis' in window)) return [];
+    const vs = speechSynthesis.getVoices(); if(!vs.length) return [];
+    const female=[/Samantha/i,/Ava/i,/Allison/i,/Serena/i,/Zoe/i,/Karen/i,/Moira/i,/Tessa/i,/Google US English/i,/Google UK English Female/i,/Microsoft (Aria|Jenny|Michelle|Ana|Zira)/i,/female/i];
     const male  =[/Daniel/i,/Alex/i,/Fred/i,/Google UK English Male/i,/Microsoft (Guy|Davis|Tony|Christopher|Mark|David)/i,/male/i];
-    const list = gender==='male'?male:female;
-    for(const rx of list){ const v=vs.find(v=>rx.test(v.name)); if(v) return v; }
-    // fallback: any natural en voice
-    for(const rx of [/Natural/i,/en-US/i,/en-GB/i]){ const v=vs.find(v=>rx.test(v.name)||rx.test(v.lang)); if(v) return v; }
-    return vs.find(v=>/^en/i.test(v.lang)) || vs[0];
+    const pats = gender==='male'?male:female;
+    const out=[];
+    for(const rx of pats){ const v=vs.find(v=>rx.test(v.name)); if(v && !out.includes(v)) out.push(v); }
+    for(const rx of [/Natural/i,/en-US/i,/en-GB/i]){ const v=vs.find(v=>(rx.test(v.name)||rx.test(v.lang)) && !out.includes(v)); if(v) out.push(v); }
+    const en=vs.find(v=>/^en/i.test(v.lang)); if(en && !out.includes(en)) out.push(en);
+    return out.length?out:[vs[0]];
   },
+  refreshVoices(){ const f=this.voiceList('female'); this._vf=f[0]||null; this._vfEx=f[1]||f[0]||null; this._vm=this.voiceList('male')[0]||null; },
   say(txt, gender){
     try{
       if(!('speechSynthesis' in window)) return;
+      if(!this._vf) this.refreshVoices();
       const u = new SpeechSynthesisUtterance(txt);
       let v;
-      if(gender==='male'){ v = this._vm || (this._vm = this.pickVoice('male')); u.pitch = 0.85; }
-      else { v = this._vf || (this._vf = this.pickVoice('female')); u.pitch = 1.05; }
+      if(gender==='male'){ v = this._vm; u.pitch = 0.85; u.rate = 0.95; }
+      else if(this.excited){ v = this._vfEx; u.pitch = 1.35; u.rate = 1.05; }   // 看台:另一個較興奮的女聲
+      else { v = this._vf; u.pitch = 1.05; u.rate = 0.95; }
       if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
-      u.rate = 0.95;
       speechSynthesis.cancel(); speechSynthesis.speak(u);
     }catch(e){}
   },
@@ -44,7 +47,7 @@ const UI = {
   shuffle(a){ const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
 };
 // voices load async in some browsers
-if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = ()=>{ UI._vf=UI.pickVoice('female'); UI._vm=UI.pickVoice('male'); }; }
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged = ()=>UI.refreshVoices(); }
 
 /* ================= Ambient audio (procedural, no external files) ================= */
 const Ambient = {
@@ -220,6 +223,7 @@ const Game = {
     if(beat>=S.beats.length) return this.finishScene();
     const b=S.beats[beat];
     this.wrongBeat=false;
+    UI.excited = (S.env==='stands');   // 看台場景用較興奮的女聲
     const gender=UI.genderFor(b.who);
     const P=document.getElementById('panel');
     const spk=(who,role,speakText)=>`<div class="speaker"><span class="who">${who}</span><span class="role">${role||''}</span>${speakText?`<button class="spk" onclick='UI.say(${JSON.stringify(speakText)},${JSON.stringify(UI.genderFor(who))})'>🔊 Listen</button>`:''}</div>`;
@@ -283,13 +287,15 @@ const Game = {
       this.wireDnD(b);
     }
     else if(b.type==="passage"){
-      P.innerHTML=spk(b.who,b.role,b.speak||'')+`<div class="body">
-        <div class="line" style="font-size:16px;font-weight:800">${b.title}</div>
-        ${b.zh?`<div class="transl ${tr}" style="margin-bottom:6px">${b.zh}</div>`:''}
-        ${b.map?`<div style="margin:8px 0">${b.map}</div>`:''}
-        <div class="sign" style="font-family:inherit;line-height:1.85;max-height:40vh;overflow:auto;font-size:14.5px">${b.html}</div>
-        ${b.vocab?`<div class="hint" style="color:#93c5fd;margin-top:8px">📘 ${b.vocab}</div>`:''}
-        <div class="foot">${prog}<button class="next" onclick="Game.adv()">Read done · 讀完作答 ▶</button></div></div>`;
+      P.innerHTML=spk(b.who,b.role,b.speak||'')+`<div class="body" style="padding:12px 16px">
+        <div class="line" style="font-size:15px;font-weight:800;line-height:1.25">${b.title}</div>
+        ${b.zh?`<div class="transl ${tr}" style="margin:2px 0 4px">${b.zh}</div>`:''}
+        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+          ${b.map?`<div style="flex:0 0 210px;max-width:210px">${b.map}</div>`:''}
+          <div class="sign" style="flex:1;min-width:220px;font-family:inherit;line-height:1.7;max-height:34vh;overflow:auto;font-size:13.5px;margin:4px 0">${b.html}</div>
+        </div>
+        ${b.vocab?`<div class="hint" style="color:#93c5fd;margin-top:6px;font-size:11.5px">📘 ${b.vocab}</div>`:''}
+        <div class="foot" style="margin-top:8px">${prog}<button class="next" onclick="Game.adv()">Read done · 讀完作答 ▶</button></div></div>`;
       if(b.speak) UI.say(b.speak, 'female');
     }
     else if(b.type==="physics"){
@@ -416,7 +422,8 @@ const Game = {
     this.save.done[id]=true; this.save.score+=this.cur.score; this.save.idx=Math.max(this.save.idx,id+1); this.persist();
     const last = id+1>=this.scenes.length;
     const body=document.getElementById('stamp-body');
-    body.innerHTML=`<div class="stampbig"><div class="em">${this.cur.S.icon}</div>
+    body.innerHTML=`<div class="stampbig">
+      <div class="stampwrap"><div class="ring"></div><div class="ring2"></div><div class="em">${this.cur.S.icon}</div></div>
       <h3 style="margin:6px 0">${this.cur.S.name} — Cleared!</h3>
       <p class="hint">護照蓋章 ✅ · 本站得分 <b style="color:#f59e0b">+${this.cur.score}</b></p>
       ${last?`<div class="pcard" style="max-width:260px;margin:12px auto"><div class="em">🏆</div><div class="nm">World Cup Trip 全程完成!</div></div>`:''}</div>

@@ -59,7 +59,9 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 /* ---- dialogue panel (AVG) ---- */
 .panel{position:absolute;left:0;right:0;bottom:0;padding:14px;pointer-events:none;z-index:20;}
-.panel .inner{pointer-events:auto;max-width:840px;margin:0 auto;background:rgba(6,12,26,.93);border:1px solid rgba(255,255,255,.16);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow:hidden;}
+.panel .inner{pointer-events:auto;max-width:840px;margin:0 auto;background:rgba(6,12,26,.93);border:1px solid rgba(255,255,255,.16);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow-y:auto;max-height:86vh;}
+/* keep any in-panel map/graphic from blowing the panel height */
+.panel .body svg{max-height:140px;width:auto;max-width:100%;display:block;margin:4px auto;}
 .speaker{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(37,99,235,.28);border-bottom:1px solid rgba(255,255,255,.12);}
 .speaker .who{font-weight:900;color:var(--wc-gold);}
 .speaker .role{font-size:12px;color:#cbd5e1;}
@@ -111,7 +113,13 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .modal .mh{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;border-radius:20px 20px 0 0;}
 .modal .mh h2{margin:0;font-size:20px;} .modal .mb{padding:18px 20px;}
 .x{background:#f1f5f9;border-radius:10px;padding:6px 12px;font-weight:800;color:#334155;}
-.stampbig{text-align:center;} .stampbig .em{font-size:64px;}
+.stampbig{text-align:center;}
+.stampwrap{position:relative;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;}
+.stampbig .em{font-size:64px;display:inline-block;position:relative;z-index:2;animation:stampIn .5s cubic-bezier(.2,1.5,.3,1) both;}
+.stampwrap .ring{position:absolute;width:118px;height:118px;border:6px solid var(--wc-red);border-radius:50%;opacity:0;z-index:1;animation:ringIn .45s ease-out .06s both;}
+.stampwrap .ring2{position:absolute;width:150px;height:150px;border:3px dashed var(--wc-red);border-radius:50%;opacity:0;z-index:1;animation:ringIn .5s ease-out .12s both;}
+@keyframes stampIn{0%{transform:scale(2.7) rotate(-22deg);opacity:0}55%{transform:scale(.86) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0)}}
+@keyframes ringIn{0%{transform:scale(2.1);opacity:0}70%{opacity:.9}100%{transform:scale(1);opacity:.85}}
 .passport{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}
 .pcard{background:linear-gradient(160deg,#1e3a8a,#2563eb);color:#fff;border-radius:14px;padding:14px;text-align:center;border:2px solid var(--wc-gold);}
 .pcard.empty{background:#e2e8f0;color:#94a3b8;border-color:#cbd5e1;}

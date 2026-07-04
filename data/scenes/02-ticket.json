@@ -10,21 +10,22 @@
       "opts": [
         { "t": "Two tickets, please.", "s": "請給我兩張票。", "ok": true },
         { "t": "I have two eyes.", "s": "我有兩隻眼睛。(離題)", "ok": false },
-        { "t": "Two o'clock, please.", "s": "兩點鐘(答錯)", "ok": false }
+        { "t": "Two o'clock, please.", "s": "兩點鐘(答錯)", "ok": false },
+        { "t": "The stadium, please.", "s": "沒回答數量", "ok": false }
       ],
       "fbOk": "🎫 完美!'Number + noun, please.' 就能點數量。",
       "fbNo": "要說 'Two tickets, please.'。" },
     { "type": "listen", "who": "Seller", "role": "售票員",
       "en": "Two tickets are forty dollars. Your seats are in Section C, Row 12.", "zh": "兩張票四十元。座位在 C 區第 12 排。",
       "q": "Where are your seats?", "qz": "你的座位在哪?",
-      "opts": [ { "t": "Section C, Row 12  C區12排", "ok": true }, { "t": "Section D, Row 20", "ok": false }, { "t": "Section A, Row 2", "ok": false } ],
+      "opts": [ { "t": "Section C, Row 12  C區12排", "ok": true }, { "t": "Section D, Row 20", "ok": false }, { "t": "Section A, Row 2", "ok": false }, { "t": "Section B, Row 30", "ok": false } ],
       "fbOk": "聽力滿分!Section C, Row 12。", "fbNo": "再聽:Section C, Row twelve。" },
     { "type": "fill", "who": "Ticket", "role": "你的球票",
       "intro": "Check your printed ticket. Fill the blanks.", "introZh": "核對你的球票,填空。",
       "sign": [["MATCH", "World Cup 2026"], ["SECTION", "___1___"], ["ROW", "___2___"], ["PRICE", "$40 / 2 tickets"]],
       "blanks": [
-        { "n": 1, "q": "The seller said Section ?", "opts": ["C", "A", "F"], "ok": 0 },
-        { "n": 2, "q": "The seller said Row ?", "opts": ["12", "20", "2"], "ok": 0 }
+        { "n": 1, "q": "The seller said Section ?", "opts": ["C", "A", "F", "D"], "ok": 0 },
+        { "n": 2, "q": "The seller said Row ?", "opts": ["12", "20", "2", "21"], "ok": 0 }
       ],
       "fb": "票面資訊正確,快進場!" }
   ]

@@ -10,14 +10,15 @@
       "opts": [
         { "t": "To the stadium, please.", "s": "請到體育場。", "ok": true },
         { "t": "I want to eat a stadium.", "s": "我想吃一座體育場。(語意錯)", "ok": false },
-        { "t": "The stadium is very big.", "s": "沒講要去哪", "ok": false }
+        { "t": "The stadium is very big.", "s": "沒講要去哪", "ok": false },
+        { "t": "I am a taxi driver.", "s": "我是計程車司機(答非所問)", "ok": false }
       ],
       "fbOk": "👍 清楚!'To the ___, please.' 是點目的地的萬用句。",
       "fbNo": "要用 'To the stadium, please.' 直接說目的地。" },
     { "type": "listen", "who": "Taxi Driver", "role": "司機",
       "en": "It's about ten minutes away. That'll be fifteen dollars.", "zh": "大約十分鐘車程,車資十五元。",
       "q": "How much is the fare?", "qz": "車資多少?",
-      "opts": [ { "t": "$15 十五元", "ok": true }, { "t": "$50 五十元", "ok": false }, { "t": "$10 十元", "ok": false } ],
+      "opts": [ { "t": "$15 十五元", "ok": true }, { "t": "$50 五十元", "ok": false }, { "t": "$10 十元", "ok": false }, { "t": "$5 五元", "ok": false } ],
       "fbOk": "對!fifteen = 15。", "fbNo": "fifteen(15)不是 fifty(50)喔,注意重音。" },
     { "type": "match", "who": "Stadium", "role": "球場單字",
       "intro": "Drag each English word to the right part of the stadium.", "introZh": "把英文單字拖到球場對應位置。",

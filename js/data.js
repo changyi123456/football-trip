@@ -1,5 +1,4 @@
-/* AUTO-GENERATED fallback bundle — lets index.html run by double-click (file://).
-   Source of truth is data/*.json; regenerate after editing (see README). */
+/* AUTO-GENERATED fallback bundle */
 window.WC_BUNDLE = {
   "config": {
     "title": "World Cup Trip · 世足英文沈浸之旅",
@@ -66,6 +65,11 @@ window.WC_BUNDLE = {
               "t": "Yes, thank you very much.",
               "s": "答非所問",
               "ok": false
+            },
+            {
+              "t": "I am from the airport.",
+              "s": "我來自機場(答非所問)",
+              "ok": false
             }
           ],
           "fbOk": "Perfect answer! 目的講清楚,官員點頭放行。",
@@ -90,6 +94,10 @@ window.WC_BUNDLE = {
             },
             {
               "t": "Upstairs 在樓上",
+              "ok": false
+            },
+            {
+              "t": "Behind you 在你後面",
               "ok": false
             }
           ],
@@ -127,7 +135,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "Arrived 已抵達",
                 "Delayed 誤點",
-                "Boarding 登機中"
+                "Boarding 登機中",
+                "Cancelled 取消"
               ],
               "ok": 0
             },
@@ -137,7 +146,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "B",
                 "D",
-                "F"
+                "F",
+                "A"
               ],
               "ok": 0
             }
@@ -192,6 +202,11 @@ window.WC_BUNDLE = {
               "t": "The stadium is very big.",
               "s": "沒講要去哪",
               "ok": false
+            },
+            {
+              "t": "I am a taxi driver.",
+              "s": "我是計程車司機(答非所問)",
+              "ok": false
             }
           ],
           "fbOk": "👍 清楚!'To the ___, please.' 是點目的地的萬用句。",
@@ -216,6 +231,10 @@ window.WC_BUNDLE = {
             },
             {
               "t": "$10 十元",
+              "ok": false
+            },
+            {
+              "t": "$5 五元",
               "ok": false
             }
           ],
@@ -296,6 +315,11 @@ window.WC_BUNDLE = {
               "t": "Two o'clock, please.",
               "s": "兩點鐘(答錯)",
               "ok": false
+            },
+            {
+              "t": "The stadium, please.",
+              "s": "沒回答數量",
+              "ok": false
             }
           ],
           "fbOk": "🎫 完美!'Number + noun, please.' 就能點數量。",
@@ -320,6 +344,10 @@ window.WC_BUNDLE = {
             },
             {
               "t": "Section A, Row 2",
+              "ok": false
+            },
+            {
+              "t": "Section B, Row 30",
               "ok": false
             }
           ],
@@ -357,7 +385,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "C",
                 "A",
-                "F"
+                "F",
+                "D"
               ],
               "ok": 0
             },
@@ -367,7 +396,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "12",
                 "20",
-                "2"
+                "2",
+                "21"
               ],
               "ok": 0
             }
@@ -389,7 +419,7 @@ window.WC_BUNDLE = {
           "eng"
         ],
         [
-          "短文克漏字 Cloze",
+          "閱讀素養 Reading",
           "mech"
         ]
       ],
@@ -410,17 +440,18 @@ window.WC_BUNDLE = {
           "opts": [
             {
               "t": "Yes, I'm so excited!",
-              "s": "對啊,我超興奮!",
               "ok": true
             },
             {
               "t": "No, I am a referee.",
-              "s": "不,我是裁判。(說謊離題)",
               "ok": false
             },
             {
               "t": "The ticket is forty dollars.",
-              "s": "答非所問",
+              "ok": false
+            },
+            {
+              "t": "The stadium is on the left.",
               "ok": false
             }
           ],
@@ -457,7 +488,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "held 舉辦",
                 "eaten 吃掉",
-                "slept 睡覺"
+                "slept 睡覺",
+                "driven 開車"
               ],
               "ok": 0
             },
@@ -467,7 +499,8 @@ window.WC_BUNDLE = {
               "opts": [
                 "teams 隊伍",
                 "tickets 票",
-                "seats 座位"
+                "seats 座位",
+                "planes 飛機"
               ],
               "ok": 0
             },
@@ -477,12 +510,105 @@ window.WC_BUNDLE = {
               "opts": [
                 "fans 球迷",
                 "goals 球門",
-                "planes 飛機"
+                "planes 飛機",
+                "coaches 教練"
               ],
               "ok": 0
             }
           ],
           "fb": "克漏字全對!held / teams / fans。"
+        },
+        {
+          "type": "passage",
+          "who": "Fan",
+          "role": "球迷:2026 黑馬故事",
+          "speak": "Have you ever heard of a country called Cape Verde?",
+          "title": "The 2026 World Cup Dark Horse: Cape Verde",
+          "zh": "2026 世界盃黑馬:維德角(Cabo Verde)",
+          "map": "<svg viewBox='0 0 300 150' style='width:100%;border-radius:10px;display:block'><rect width='300' height='150' fill='#a9c7e8'/><path d='M182,0 L300,0 L300,150 L172,150 Q198,112 184,82 Q206,54 190,28 Z' fill='#b8bf88'/><text x='232' y='64' font-size='11' fill='#2b2b2b' font-weight='bold'>W. AFRICA</text><circle cx='70' cy='72' r='4' fill='#d33'/><circle cx='86' cy='62' r='3' fill='#d33'/><circle cx='58' cy='88' r='3' fill='#d33'/><circle cx='80' cy='90' r='4' fill='#d33'/><path d='M178,52 Q120,48 88,68' stroke='#d33' stroke-width='2' fill='none' stroke-dasharray='3 3'/><text x='40' y='120' font-size='11' fill='#12406e' font-weight='bold'>CABO VERDE</text><text x='120' y='38' font-size='9' fill='#12406e'>~570 km</text><text x='12' y='145' font-size='10' fill='#2a5a86' font-style='italic'>ATLANTIC OCEAN</text></svg>",
+          "html": "Have you ever heard of a country called <b>Cape Verde</b>? It is a small but beautiful <b>island country</b>. If you look at the map above, you will find it in the ocean on the west of Africa, made of ten islands. It only has about 550,000 people. Although it is small, it caught the world's eyes in the 2026 World Cup.<br><br>Before 2026, few people knew Cape Verde's soccer team, the <b>\"Blue Sharks\"</b>. This was their first time in the World Cup. They were in the same group as Spain, Uruguay, and Saudi Arabia. Nobody thought they could win.<br><br>However, they surprised everyone! They did not lose any of their three games. With the help of their 40-year-old <b>goalkeeper</b>, Vozinha, they tied all three teams and became the smallest country ever to reach the round of 32 — the true <b>\"dark horse\"</b>.<br><br>Next, they played Argentina. The Blue Sharks tied in the first ninety minutes. Although they lost in <b>extra time</b>, they held their heads high and showed the world their <b>resilience</b> and fighting spirit. They show us that nothing is impossible!",
+          "vocab": "dark horse 黑馬 · goalkeeper 守門員 · extra time 延長賽/加時賽 · resilience 韌性/不屈不撓"
+        },
+        {
+          "type": "choose",
+          "who": "Reading Q1",
+          "role": "篇章大意題",
+          "en": "What is the reading mostly about?",
+          "zh": "這篇文章主要在講什麼?",
+          "opts": [
+            {
+              "t": "How the Blue Sharks surprised the world in the 2026 World Cup.",
+              "ok": true
+            },
+            {
+              "t": "Why Cape Verde is a beautiful place for a vacation.",
+              "ok": false
+            },
+            {
+              "t": "Who the best soccer player in Cape Verde is.",
+              "ok": false
+            },
+            {
+              "t": "How to win a soccer game against a strong team.",
+              "ok": false
+            }
+          ],
+          "fbOk": "✅ 對!全文重點是藍鯊隊如何驚艷世界。",
+          "fbNo": "❌ 主旨是『藍鯊隊如何在 2026 世界盃讓全世界驚訝』。"
+        },
+        {
+          "type": "choose",
+          "who": "Reading Q2",
+          "role": "字詞推論題",
+          "en": "What does it mean when someone has \"resilience\"?",
+          "zh": "有 resilience 是什麼意思?",
+          "opts": [
+            {
+              "t": "They keep fighting and do not give up easily.",
+              "ok": true
+            },
+            {
+              "t": "They are lucky enough to win every game.",
+              "ok": false
+            },
+            {
+              "t": "They feel angry and sad when they lose.",
+              "ok": false
+            },
+            {
+              "t": "They always follow the rules of the game.",
+              "ok": false
+            }
+          ],
+          "fbOk": "✅ resilience = 韌性、不輕言放棄。",
+          "fbNo": "❌ resilience 指『持續奮戰、不輕易放棄』。"
+        },
+        {
+          "type": "choose",
+          "who": "Reading Q3",
+          "role": "細節理解題",
+          "en": "Which is true about the Blue Sharks from the reading?",
+          "zh": "關於藍鯊隊,下列何者正確?",
+          "opts": [
+            {
+              "t": "2026 was their first time playing in the World Cup.",
+              "ok": true
+            },
+            {
+              "t": "They lost to Spain and Saudi Arabia in the first round.",
+              "ok": false
+            },
+            {
+              "t": "They beat Argentina and moved to the next round.",
+              "ok": false
+            },
+            {
+              "t": "They were the largest country to enter the round of 32.",
+              "ok": false
+            }
+          ],
+          "fbOk": "✅ 對,2026 是他們首度打進世界盃。",
+          "fbNo": "❌ 文中說 2026 是他們第一次打世界盃;對阿根廷是延長賽落敗、且他們是『最小』的國家。"
         }
       ]
     },
@@ -532,6 +658,11 @@ window.WC_BUNDLE = {
               "t": "The ball is a stadium.",
               "s": "語意錯",
               "ok": false
+            },
+            {
+              "t": "How much is the ticket?",
+              "s": "問票價(離題)",
+              "ok": false
             }
           ],
           "fbOk": "好問題!'Why did the ball curve?' — 我們來親手試試看。",
@@ -563,6 +694,10 @@ window.WC_BUNDLE = {
             },
             {
               "t": "stopped 停住",
+              "ok": false
+            },
+            {
+              "t": "flew backward 往後飛",
               "ok": false
             }
           ],

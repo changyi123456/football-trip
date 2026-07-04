@@ -281,6 +281,16 @@ const Game = {
         <div class="fb" id="fb"></div><div class="foot">${prog}<span class="hint" style="color:#93c5fd">拖曳或點單字再點格子 · 點單字可聽發音</span></div></div>`;
       this.wireDnD(b);
     }
+    else if(b.type==="passage"){
+      P.innerHTML=spk(b.who,b.role,b.speak||'')+`<div class="body">
+        <div class="line" style="font-size:16px;font-weight:800">${b.title}</div>
+        ${b.zh?`<div class="transl ${tr}" style="margin-bottom:6px">${b.zh}</div>`:''}
+        ${b.map?`<div style="margin:8px 0">${b.map}</div>`:''}
+        <div class="sign" style="font-family:inherit;line-height:1.85;max-height:40vh;overflow:auto;font-size:14.5px">${b.html}</div>
+        ${b.vocab?`<div class="hint" style="color:#93c5fd;margin-top:8px">📘 ${b.vocab}</div>`:''}
+        <div class="foot">${prog}<button class="next" onclick="Game.adv()">Read done · 讀完作答 ▶</button></div></div>`;
+      if(b.speak) UI.say(b.speak, 'female');
+    }
     else if(b.type==="physics"){
       P.innerHTML=spk(b.who,b.role,'')+`<div class="body">
         <div class="line" style="font-size:15px">⚽ ${b.intro}</div>

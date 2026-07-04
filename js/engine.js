@@ -88,6 +88,7 @@ class FPV {
   loadPano(env){
     const B = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/';
     const P = {
+      flight:   B+'cabin_1k.hdr',              // real interior surround (no more black cabin)
       airport:  B+'rostock_laage_airport_1k.hdr',
       street:   B+'wide_street_01_1k.hdr',
       concourse:B+'stadium_01_1k.hdr',
@@ -246,34 +247,16 @@ class FPV {
   }
 
   envFlight(){
-    this.scene.background = new THREE.Color(0x243350);   // brighter cabin ambience (was near-black)
-    this.hemi.intensity=1.3;
-    // fuselage tube (bright interior)
-    const tube = new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,16,32,1,true), this.mat(0xf2f5fa,{side:THREE.BackSide,roughness:0.55}));
-    tube.rotation.x=Math.PI/2; tube.position.set(0,1.4,-4); this.dyn.add(tube);
-    this.box(0,0.2,-4,4.6,0.2,16,0xc7d0dd); // floor
-    // seat in front
-    this.box(0,0.9,-1.6,1.2,1.2,0.25,0x2a4bad); // seat back
-    this.box(-0.9,0.9,-1.6,0.9,1.1,0.22,0x2f52c0);
-    this.box(0.9,0.9,-1.6,0.9,1.1,0.22,0x2f52c0);
-    // overhead + cabin strip lights + strong fill so the cabin is never dark
-    for(let z=2;z>-12;z-=2){ this.glow(0,3.4,z,0xfff6df,0.12); }
-    const cabin=new THREE.PointLight(0xfff2d8,1.6,26); cabin.position.set(0,3,-3); this.dyn.add(cabin);
-    const cabin2=new THREE.PointLight(0xdfe9ff,1.2,26); cabin2.position.set(0,2.4,2); this.dyn.add(cabin2);
-    // window with animated clouds (left side)
-    const cvs=document.createElement('canvas'); cvs.width=256; cvs.height=256; const cx=cvs.getContext('2d');
-    const tex=new THREE.CanvasTexture(cvs);
-    const win=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.4), new THREE.MeshBasicMaterial({map:tex}));
-    win.position.set(-2.28,1.7,-4); win.rotation.y=Math.PI/2; this.dyn.add(win);
-    const frame=new THREE.Mesh(new THREE.TorusGeometry(0.75,0.09,8,20), this.mat(0xcbd5e1)); frame.position.copy(win.position); frame.rotation.y=Math.PI/2; this.dyn.add(frame);
-    this.anims.push((t)=>{
-      const g=cx.createLinearGradient(0,0,0,256); g.addColorStop(0,'#8ec5ff'); g.addColorStop(1,'#dcefff');
-      cx.fillStyle=g; cx.fillRect(0,0,256,256);
-      cx.fillStyle='rgba(255,255,255,0.9)';
-      for(let i=0;i<6;i++){ const y=((i*46 + t*36)%300)-40; cx.beginPath(); cx.ellipse(60+ (i%3)*70, y, 46, 20, 0, 0, 7); cx.fill(); }
-      tex.needsUpdate=true;
-    });
-    this.anims.push((t)=>{ this.camera.position.y = 1.65 + Math.sin(t*2.2)*0.015; }); // gentle turbulence
+    // real interior 360 photo is loaded by loadPano('flight'); keep only a seat in the foreground
+    this.scene.background = new THREE.Color(0x243350);   // fallback colour until the photo loads
+    this.hemi.intensity=1.0;
+    // seat back + armrests directly in front (first-person, seated)
+    this.box(0,0.95,-1.5,1.25,1.25,0.22,0x27324d);
+    this.box(0,0.30,-1.25,1.3,0.18,0.7,0x2d3a58);        // seat cushion
+    this.box(-0.78,0.9,-1.35,0.3,1.05,0.6,0x333f5c);
+    this.box(0.78,0.9,-1.35,0.3,1.05,0.6,0x333f5c);
+    // gentle turbulence bob
+    this.anims.push((t)=>{ this.camera.position.y = 1.65 + Math.sin(t*2.2)*0.012; });
   }
 
   envAirport(){

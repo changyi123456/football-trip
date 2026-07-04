@@ -8,27 +8,47 @@ const UI = {
   open(id){ document.getElementById(id).classList.add('active'); },
   close(id){ document.getElementById(id).classList.remove('active'); },
   toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),1800); },
-  _vk:null, excited:false, _u:null,
-  refreshVoices(){
-    if(!('speechSynthesis' in window)) return;
-    const vs = speechSynthesis.getVoices(); if(!vs.length) return;
-    // prefer an actual child voice if the OS has one, else a clear high female voice (we pitch it up)
-    const prefer=[/child|kid|junior/i,/Samantha/i,/Ava/i,/Zoe/i,/Google US English/i,/Microsoft (Aria|Jenny|Ana|Michelle)/i,/female/i,/en-US/i,/en-GB/i];
-    let v=null; for(const rx of prefer){ v=vs.find(x=>rx.test(x.name)||rx.test(x.lang)); if(v) break; }
-    this._vk = v || vs.find(x=>/^en/i.test(x.lang)) || vs[0] || null;
+  _vf:null, _vfEx:null, _vm:null, _vk:null, excited:false, _u:null,
+  voiceList(gender){
+    if(!('speechSynthesis' in window)) return [];
+    const vs = speechSynthesis.getVoices(); if(!vs.length) return [];
+    const female=[/Samantha/i,/Ava/i,/Allison/i,/Serena/i,/Zoe/i,/Karen/i,/Moira/i,/Tessa/i,/Google US English/i,/Google UK English Female/i,/Microsoft (Aria|Jenny|Michelle|Ana|Zira)/i,/female/i];
+    const male  =[/Daniel/i,/Alex/i,/Fred/i,/Google UK English Male/i,/Microsoft (Guy|Davis|Tony|Christopher|Mark|David)/i,/male/i];
+    const pats = gender==='male'?male:female;
+    const out=[];
+    for(const rx of pats){ const v=vs.find(v=>rx.test(v.name)); if(v && !out.includes(v)) out.push(v); }
+    for(const rx of [/Natural/i,/en-US/i,/en-GB/i]){ const v=vs.find(v=>(rx.test(v.name)||rx.test(v.lang)) && !out.includes(v)); if(v) out.push(v); }
+    const en=vs.find(v=>/^en/i.test(v.lang)); if(en && !out.includes(en)) out.push(en);
+    return out.length?out:[vs[0]];
   },
-  say(txt){
+  refreshVoices(){
+    const f=this.voiceList('female'); this._vf=f[0]||null; this._vfEx=f[1]||f[0]||null; this._vm=this.voiceList('male')[0]||null;
+    // cute child voice: real child voice if the OS has one, else a soft pleasant female (we lift the pitch a little)
+    const vs=(('speechSynthesis' in window)?speechSynthesis.getVoices():[])||[];
+    const kid=vs.find(x=>/child|kid|junior|shelley|karen|tessa/i.test(x.name));
+    this._vk = kid || vs.find(x=>/Samantha|Ava|Google US English/i.test(x.name)) || this._vf || null;
+  },
+  _speak(u){ this._u=u; try{ speechSynthesis.cancel(); }catch(e){} setTimeout(()=>{ try{ speechSynthesis.resume(); speechSynthesis.speak(u); }catch(e){} }, 70); },
+  say(txt, gender){
+    if(!('speechSynthesis' in window) || !txt) return;
+    if(!this._vf) this.refreshVoices();
+    const u = new SpeechSynthesisUtterance(txt);
+    let v;
+    if(gender==='male'){ v = this._vm; u.pitch = 0.85; u.rate = 0.95; }
+    else if(this.excited){ v = this._vfEx; u.pitch = 1.35; u.rate = 1.05; }   // 看台:較興奮的女聲
+    else { v = this._vf; u.pitch = 1.05; u.rate = 0.95; }
+    if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "en-US";
+    this._speak(u);
+  },
+  sayChild(txt){   // 只在「答對」時唸出的可愛童聲
     if(!('speechSynthesis' in window) || !txt) return;
     if(!this._vk) this.refreshVoices();
     const u = new SpeechSynthesisUtterance(txt);
     if(this._vk){ u.voice = this._vk; u.lang = this._vk.lang; } else u.lang = "en-US";
-    u.pitch = 1.7; u.rate = 1.02;   // 童聲:高音調、稍快
-    this._u = u;                    // keep a reference so it isn't garbage-collected mid-speech
-    try{ speechSynthesis.cancel(); }catch(e){}
-    // cancel() is async in Chrome; speaking immediately can be dropped → small delay + resume()
-    setTimeout(()=>{ try{ speechSynthesis.resume(); speechSynthesis.speak(u); }catch(e){} }, 70);
+    u.pitch = 1.45; u.rate = 1.02;
+    this._speak(u);
   },
-  genderFor(){ return 'child'; },
+  genderFor(who){ return /driver|coach|officer|man\b|mr\.?/i.test(who||'') ? 'male' : 'female'; },
   // strip CJK / fullwidth chars from option labels; keep pure English
   stripZh(s){
     s = '' + s;
@@ -330,7 +350,7 @@ const Game = {
     btns[i].classList.add('correct');
     fb.className="fb show ok"; fb.innerHTML="✅ "+(b.fbOk||"Correct!");
     if(!this.wrongBeat) this.cur.score++;
-    if(!listen) UI.say(UI.stripZh(opts[i].t), UI.genderFor(b.who));
+    UI.sayChild(UI.stripZh(opts[i].t));   // 答對才用可愛童聲唸出正解
     this.footNext();
   },
   footNext(){

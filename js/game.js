@@ -290,9 +290,9 @@ const Game = {
       P.innerHTML=spk(b.who,b.role,b.speak||'')+`<div class="body" style="padding:12px 16px">
         <div class="line" style="font-size:15px;font-weight:800;line-height:1.25">${b.title}</div>
         ${b.zh?`<div class="transl ${tr}" style="margin:2px 0 4px">${b.zh}</div>`:''}
-        <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
-          ${b.map?`<div style="flex:0 0 210px;max-width:210px">${b.map}</div>`:''}
-          <div class="sign" style="flex:1;min-width:220px;font-family:inherit;line-height:1.7;max-height:34vh;overflow:auto;font-size:13.5px;margin:4px 0">${b.html}</div>
+        <div class="passgrid">
+          ${b.map?`<div class="passmap">${b.map}</div>`:''}
+          <div class="sign passtext">${b.html}</div>
         </div>
         ${b.vocab?`<div class="hint" style="color:#93c5fd;margin-top:6px;font-size:11.5px">📘 ${b.vocab}</div>`:''}
         <div class="foot" style="margin-top:8px">${prog}<button class="next" onclick="Game.adv()">Read done · 讀完作答 ▶</button></div></div>`;

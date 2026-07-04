@@ -60,8 +60,13 @@ button{font-family:inherit;cursor:pointer;border:none;}
 /* ---- dialogue panel (AVG) ---- */
 .panel{position:absolute;left:0;right:0;bottom:0;padding:14px;pointer-events:none;z-index:20;}
 .panel .inner{pointer-events:auto;max-width:840px;margin:0 auto;background:rgba(6,12,26,.93);border:1px solid rgba(255,255,255,.16);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(10px);overflow-y:auto;max-height:86vh;}
-/* keep any in-panel map/graphic from blowing the panel height */
-.panel .body svg{max-height:140px;width:auto;max-width:100%;display:block;margin:4px auto;}
+/* reading passage: fixed LEFT map + RIGHT scrolling text (never stacks tall) */
+.passgrid{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start;margin-top:6px;}
+.passmap svg{width:100%;height:auto;max-height:150px;display:block;border-radius:10px;}
+.passtext{font-family:inherit !important;line-height:1.6;font-size:13px;max-height:30vh;overflow:auto;margin:0 !important;}
+@media(max-width:620px){ .passgrid{grid-template-columns:1fr;} .passmap svg{max-height:120px;} .passtext{max-height:26vh;} }
+/* keep any other in-panel graphic from blowing the panel height */
+.panel .body svg{max-height:150px;width:auto;max-width:100%;}
 .speaker{display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(37,99,235,.28);border-bottom:1px solid rgba(255,255,255,.12);}
 .speaker .who{font-weight:900;color:var(--wc-gold);}
 .speaker .role{font-size:12px;color:#cbd5e1;}

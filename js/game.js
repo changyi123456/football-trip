@@ -253,10 +253,11 @@ const Game = {
       setTimeout(()=>UI.say(b.en, gender),300);
     }
     else if(b.type==="fill"){
+      // board table intentionally NOT shown here — the info is already on the 3D sign in the scene,
+      // so the panel stays compact and doesn't block the view.
       P.innerHTML=spk(b.who,b.role,'')+`<div class="body">
         <div class="line" style="font-size:15px">🪧 ${b.intro}</div>
         <div class="transl ${tr}">${b.introZh}</div>
-        <div class="sign">${b.sign.map(([k,v])=>`<div class="row"><b>${k}</b><span>${(''+v).replace(/___(\d)___/g,'<span class="blank" id="bk-$1">?</span>')}</span></div>`).join('')}</div>
         <div id="fillqs"></div><div class="fb" id="fb"></div><div class="foot">${prog}<span></span></div></div>`;
       this.fillState={i:0,ok:0}; this.renderFillQ();
     }

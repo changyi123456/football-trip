@@ -88,7 +88,6 @@ class FPV {
   loadPano(env){
     const B = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/';
     const P = {
-      flight:   B+'cabin_1k.hdr',              // real interior surround (no more black cabin)
       airport:  B+'rostock_laage_airport_1k.hdr',
       street:   B+'wide_street_01_1k.hdr',
       concourse:B+'stadium_01_1k.hdr',
@@ -247,16 +246,40 @@ class FPV {
   }
 
   envFlight(){
-    // real interior 360 photo is loaded by loadPano('flight'); keep only a seat in the foreground
-    this.scene.background = new THREE.Color(0x243350);   // fallback colour until the photo loads
-    this.hemi.intensity=1.0;
-    // seat back + armrests directly in front (first-person, seated)
-    this.box(0,0.95,-1.5,1.25,1.25,0.22,0x27324d);
-    this.box(0,0.30,-1.25,1.3,0.18,0.7,0x2d3a58);        // seat cushion
-    this.box(-0.78,0.9,-1.35,0.3,1.05,0.6,0x333f5c);
-    this.box(0.78,0.9,-1.35,0.3,1.05,0.6,0x333f5c);
-    // gentle turbulence bob
-    this.anims.push((t)=>{ this.camera.position.y = 1.65 + Math.sin(t*2.2)*0.012; });
+    // real AIRPLANE cabin (geometry). Bright interior so it never reads as black.
+    this.scene.background = new THREE.Color(0xdfe6f0);
+    this.hemi.intensity=1.4;
+    const wall = 0xeef2f7, trim = 0xcdd6e2, seatC = 0x24406e, seatC2 = 0x2d4f86;
+    // curved ceiling (half tube overhead) + floor + side walls forming the fuselage
+    const ceil = new THREE.Mesh(new THREE.CylinderGeometry(2.5,2.5,20,28,1,true,0,Math.PI),
+      this.mat(wall,{side:THREE.BackSide,roughness:0.6}));
+    ceil.rotation.z=Math.PI; ceil.rotation.x=Math.PI/2; ceil.position.set(0,2.7,-6); this.dyn.add(ceil);
+    this.box(0,0.05,-6,4.2,0.1,22,0xb9c2d0);                 // floor
+    this.box(0,0.08,-6,0.7,0.12,22,0x2b3340);                // aisle carpet
+    this.box(-2.15,1.5,-6,0.28,3,22,wall); this.box(2.15,1.5,-6,0.28,3,22,wall); // side walls
+    // overhead bins both sides
+    this.box(-1.6,2.5,-6,0.9,0.55,22,trim,{roughness:0.5}); this.box(1.6,2.5,-6,0.9,0.55,22,trim,{roughness:0.5});
+    // oval windows with bright sky (both walls)
+    for(let z=-1; z>-15; z-=2.4){
+      const skyL=new THREE.Mesh(new THREE.PlaneGeometry(0.55,0.7), new THREE.MeshBasicMaterial({color:0x9fd0ff, toneMapped:false}));
+      skyL.position.set(-2.0,1.75,z); skyL.rotation.y=Math.PI/2; this.dyn.add(skyL);
+      const skyR=skyL.clone(); skyR.position.set(2.0,1.75,z); skyR.rotation.y=-Math.PI/2; this.dyn.add(skyR);
+      this.glow(-2.0,1.75,z,0xdff0ff,0.05); this.glow(2.0,1.75,z,0xdff0ff,0.05);
+    }
+    // rows of seats (blue), two seats each side of the aisle, receding forward
+    for(let r=0; r<6; r++){
+      const z=-1.4 - r*2.2;
+      [-1.5,-0.85,0.85,1.5].forEach((x,i)=>{
+        this.box(x,0.95,z,0.6,1.15,0.25,(r%2? seatC:seatC2));   // seat back
+        this.box(x,0.42,z+0.28,0.6,0.16,0.55,(r%2? seatC:seatC2)); // cushion
+      });
+    }
+    // cabin lighting
+    const c1=new THREE.PointLight(0xfff4e0,1.2,30); c1.position.set(0,2.6,-3); this.dyn.add(c1);
+    const c2=new THREE.PointLight(0xeaf1ff,1.0,30); c2.position.set(0,2.4,-10); this.dyn.add(c2);
+    // seated first-person view + gentle turbulence
+    this.camera.position.set(0.0,1.55,1.2);
+    this.anims.push((t)=>{ this.camera.position.y = 1.55 + Math.sin(t*2.2)*0.012; });
   }
 
   envAirport(){
@@ -316,54 +339,62 @@ class FPV {
   }
 
   envStands(){
-    this.skyDome(0x2f74d6, 0x123056);
-    this.hemi.intensity=1.2;
-    // pitch in front / below
-    const pitch=new THREE.Mesh(new THREE.PlaneGeometry(70,45), this.mat(0x0f8a45,{roughness:0.85}));
-    pitch.rotation.x=-Math.PI/2; pitch.position.set(0,-6,-30); pitch.receiveShadow=true; this.dyn.add(pitch);
-    // mowing stripes
-    for(let i=0;i<14;i++){ const s=new THREE.Mesh(new THREE.PlaneGeometry(70,3), this.mat(i%2?0x0c7d3c:0x12a052)); s.rotation.x=-Math.PI/2; s.position.set(0,-5.98,-14-i*3); this.dyn.add(s);}
-    // pitch lines
-    const line=(w,d,x,z)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),this.mat(0xffffff));m.rotation.x=-Math.PI/2;m.position.set(x,-5.95,z);this.dyn.add(m);};
-    line(70,0.2,0,-30); line(0.2,45,0,-30);
-    // opposite stand
-    this.box(0,2,-52,74,18,3,0x1f2a44,{roughness:0.9});
-    // near seating bowl (tiered) with instanced crowd
-    this.buildCrowd();
-    // big screen
-    this.box(0,10,-50,12,6.6,0.6,0x05070d); this.glow(0,10,-49.6,0x2563eb,0.2);
-    const scr=new THREE.PointLight(0x3b82f6,0.7,40); scr.position.set(0,10,-46); this.dyn.add(scr);
-    // floodlights
-    this.floodTower(-30,-46); this.floodTower(30,-46); this.floodTower(-30,-8); this.floodTower(30,-8);
-    // fan in next seat
-    this.camera.position.set(0,1.65,2);
-    this.npc(1.7,-1.4,0xdc2626);
+    // real stadium 360 photo (orlando_stadium) is loaded as the surround; build a SOLID
+    // near grandstand so there is no see-through gap under the seats.
+    this.scene.background = new THREE.Color(0x1a3a63);
+    this.hemi.intensity=1.0;
+    const concrete = 0x39414f, concrete2 = 0x323a47, rail = 0xc3ccd8;
+
+    // player's own terrace (solid slab under the camera + neighbour)
+    this.box(0,0.55,1.4,64,1.1,3.4,concrete,{roughness:0.95});
+    // descending solid terraces in front (toward the pitch) with spectators on each
+    const rows=7;
+    for(let r=0;r<rows;r++){
+      const y = -0.1 - r*0.7;          // each row a step lower
+      const z = -1.2 - r*1.5;          // and further toward the pitch
+      // solid step slab (this is the key fix — fills under the seats)
+      this.box(0, y, z, 64, 0.7, 1.5, r%2?concrete:concrete2, {roughness:0.95});
+      // riser face at the front edge of the step
+      this.box(0, y-0.35, z-0.75, 64, 0.7, 0.14, 0x2a3140, {roughness:0.95});
+    }
+    // spectators sitting on the terraces (instanced, seated on the solid steps)
+    this.buildCrowd(rows);
+    // railing in front of the player
+    this.box(0,1.35,-0.4,64,0.12,0.12,rail,{metalness:0.5,roughness:0.4});
+    for(let x=-30;x<=30;x+=5){ this.box(x,0.95,-0.4,0.1,0.7,0.1,rail,{metalness:0.5}); }
+    // solid back wall + side walls so nothing is see-through around the player
+    this.box(0,4,3.4,66,9,0.6,0x232b3b,{roughness:0.95});
+    this.box(-33,2.5,-3,0.6,12,26,0x232b3b,{roughness:0.95});
+    this.box(33,2.5,-3,0.6,12,26,0x232b3b,{roughness:0.95});
+    // wedge filling underneath the lowest terrace down out of view
+    this.box(0,-6,-6,66,10,16,0x2b3240,{roughness:0.98});
+    // floodlights for atmosphere
+    this.floodTower(-32,-14); this.floodTower(32,-14);
+    // seated first-person view + neighbour fan on the same terrace
+    this.camera.position.set(0,1.7,2.0);
+    this.npc(1.9,0.55,0xdc2626);
   }
-  buildCrowd(){
-    const rows=8, perRow=64;
-    const geo=new THREE.BoxGeometry(0.34,0.55,0.34);
+  buildCrowd(rows){
+    rows = rows||7; const perRow=60;
+    const geo=new THREE.BoxGeometry(0.36,0.6,0.36);
     const mesh=new THREE.InstancedMesh(geo, this.mat(0xffffff,{roughness:0.9}), rows*perRow);
     mesh.castShadow=false;
     const dummy=new THREE.Object3D(); const col=new THREE.Color(); let i=0;
     const teamA=[0xdc2626,0xef4444,0xf59e0b], teamB=[0x1e3a8a,0x2563eb,0x93c5fd];
     for(let r=0;r<rows;r++){
-      const y=-2.4 + r*0.75, z=-1 - r*1.15;
+      // match the terrace positions built in envStands
+      const y = (-0.1 - r*0.7) + 0.65, z = (-1.2 - r*1.5) + 0.15;
       for(let c=0;c<perRow;c++){
-        const x=-31 + c*0.98;
-        dummy.position.set(x, y, z); dummy.rotation.y=0; dummy.updateMatrix();
+        const x=-29 + c*0.98;
+        dummy.position.set(x + (Math.random()*0.2-0.1), y, z); dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
         const pal = (c<perRow/2)? teamA:teamB;
-        col.setHex(pal[(r+c)%pal.length]); mesh.setColorAt(i, col);
+        col.setHex(pal[(r*7+c)%pal.length]); mesh.setColorAt(i, col);
         i++;
       }
     }
     mesh.instanceMatrix.needsUpdate=true; if(mesh.instanceColor) mesh.instanceColor.needsUpdate=true;
     this.dyn.add(mesh);
-    // subtle crowd shimmer
-    const base=[]; for(let k=0;k<rows*perRow;k++) base.push(Math.random()*6);
-    this.anims.push((t)=>{
-      // cheap wave: nudge a few instances (visual life) — keep light
-    });
   }
 
   envPitch(){
